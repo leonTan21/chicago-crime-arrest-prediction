@@ -77,14 +77,14 @@ python models/xgboost_classifier.py
 
 | Model | Train Acc | Test Acc | Precision | Recall | **F1** | **ROC-AUC** |
 |---|---|---|---|---|---|---|
-| Logistic Regression | — | — | — | — | — | — |
-| Decision Tree | — | — | — | — | — | — |
-| Ridge Classifier | — | — | — | — | — | — |
-| Random Forest | — | — | — | — | — | — |
-| Gradient Boosting | — | — | — | — | — | — |
-| XGBoost | — | — | — | — | — | — |
+| Logistic Regression | 0.5729 | 0.5742 | 0.3166 | 0.6205 | 0.4192 | 0.6197 |
+| Decision Tree | 0.8348 | 0.8294 | 0.6357 | 0.7290 | 0.6791 | 0.8830 |
+| Ridge Classifier | 0.5714 | 0.5728 | 0.3162 | 0.6232 | 0.4195 | 0.6196 |
+| Random Forest | 0.9703 | 0.8747 | 0.8500 | 0.5998 | **0.7033** | 0.8813 |
+| Gradient Boosting | 0.8758 | 0.8753 | 0.8976 | 0.5604 | 0.6900 | 0.8820 |
+| **XGBoost** | 0.8568 | 0.8450 | 0.6741 | 0.7241 | 0.6982 | **0.8936** |
 
-*Run the notebook to populate this table with your results.*
+> Trained on a stratified 500k-row subsample (random_state=42). XGBoost achieves the best ROC-AUC (0.8936); Random Forest leads on F1 (0.7033).
 
 ---
 
