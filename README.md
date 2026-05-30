@@ -1,10 +1,11 @@
 # Chicago Crime Arrest Prediction
 
 A binary classification project predicting whether a reported crime in Chicago
-will result in an arrest, using the full Chicago Crimes 2001–Present dataset
+will result in an arrest, using the Chicago Crimes 2001–Present dataset
 (8M+ rows) from the Chicago Data Portal.  Six scikit-learn / XGBoost models
 are compared using F1 score and ROC-AUC as primary metrics — chosen because
-the 72/28 class imbalance makes raw accuracy misleading.
+the ~75/25 class imbalance makes raw accuracy misleading.  Best result:
+**XGBoost (AUC 0.8936, F1 0.6982)**.
 
 ---
 
@@ -62,10 +63,10 @@ pip install requests pandas numpy scikit-learn xgboost imbalanced-learn \
 
 # 3. Launch the notebook from the project root
 #    The dataset (~1.8 GB) is downloaded automatically on first run
-#    from the Chicago Data Portal and cached to data/chicago_crimes.csv.
+#    from the Chicago Data Portal and cached to notebooks/data/chicago_crimes.csv.
 jupyter notebook notebooks/chicago_crime_prediction.ipynb
 
-# 5. Or run individual model scripts
+# 4. Or run individual model scripts
 python models/logistic_regression.py
 python models/random_forest.py
 python models/xgboost_classifier.py
@@ -107,17 +108,27 @@ elevated volume vs. weekdays.*
 
 ### Model Comparison (F1 vs ROC-AUC)
 ![Model Comparison](notebooks/images/model_comparison.png)
+*Ensemble models (Random Forest, Gradient Boosting, XGBoost) dominate on both
+metrics. Linear baselines (Logistic Regression, Ridge) plateau near AUC 0.62,
+confirming that arrest outcomes are driven by non-linear feature interactions.*
 
-### Confusion Matrix — Best Model
+### Confusion Matrix — Best Model (XGBoost)
 ![Confusion Matrix](notebooks/images/confusion_matrix.png)
+*On the 100k-row test set: 66,563 true negatives, 17,933 true positives,
+8,671 false positives, 6,833 false negatives. False negatives (missed arrests)
+are the operationally costlier error; lowering the decision threshold from 0.5
+would trade precision for higher recall.*
 
-### ROC Curve — Best Model
+### ROC Curve — Best Model (XGBoost)
 ![ROC Curve](notebooks/images/roc_curve.png)
+*AUC 0.8936 — the model correctly ranks an arrested crime above a non-arrested
+one ~89% of the time when presented with a random pair.*
 
-### Top 15 Feature Importances — Best Model
+### Top 15 Feature Importances — Best Model (XGBoost)
 ![Feature Importance](notebooks/images/feature_importance.png)
 *Primary Type dominates, confirming that crime category is the single strongest
-predictor of arrest outcome.*
+predictor of arrest outcome. Temporal (Hour, Year) and geographic (Community
+Area, District) features also rank highly.*
 
 ---
 
@@ -139,7 +150,8 @@ predictor of arrest outcome.*
 
 - **Ensemble models (Random Forest / XGBoost / Gradient Boosting) outperform linear
   models on F1 and AUC** because arrest outcomes are driven by non-linear interactions
-  between crime type, time, and location.
+  between crime type, time, and location.  XGBoost leads on AUC (0.8936) while
+  Random Forest leads on F1 (0.7033); linear baselines stall at AUC ~0.62.
 
 ---
 
@@ -154,3 +166,4 @@ predictor of arrest outcome.*
 | Scaling | StandardScaler fit on train set only |
 | Class imbalance | `class_weight='balanced'` (sklearn); `scale_pos_weight=n_neg/n_pos` (XGBoost) |
 | CV strategy | GridSearchCV, cv=5, scoring='roc_auc' |
+| Training subsample | 500k rows, stratified on `Arrest` (full 8M used for EDA) |
